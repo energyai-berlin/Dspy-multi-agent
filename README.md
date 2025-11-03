@@ -22,7 +22,7 @@ This project showcases a hierarchical agent architecture where a main coordinato
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Configuration
