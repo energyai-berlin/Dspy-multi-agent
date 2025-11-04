@@ -21,64 +21,42 @@ from functools import wraps
 
 
 def print_react_trajectory(prediction: dspy.Prediction):
-    """Print ReAct trajectory in 'thinking → action → results' format"""
+    """Print ReAct trajectory in compact format"""
     if not hasattr(prediction, 'trajectory') or not prediction.trajectory:
         return
 
     trajectory = prediction.trajectory
-
-    max_iter = 0
-    while f'thought_{max_iter}' in trajectory:
-        max_iter += 1
-
-    # Print each iteration
-    for i in range(max_iter):
-        thought = trajectory.get(f'thought_{i}', '')
-        tool_name = trajectory.get(f'tool_name_{i}', '')
-        tool_args = trajectory.get(f'tool_args_{i}', {})
-        observation = trajectory.get(f'observation_{i}', '')
-
-        print(f"\n   💭 Thinking: {thought}")
-        print(f"   🔧 Action: {tool_name}({tool_args})")
-        print(f"   📊 Result: {observation}")
+    i = 0
+    while f'thought_{i}' in trajectory:
+        print(f"\n   Thinking: {trajectory.get(f'thought_{i}', '')}")
+        print(f"   Action: {trajectory.get(f'tool_name_{i}', '')}({trajectory.get(f'tool_args_{i}', {})})")
+        print(f"   Result: {trajectory.get(f'observation_{i}', '')}")
+        i += 1
 
 
 def trace_agent(agent_name: str):
-    """Decorator to trace agent execution with visual hierarchy"""
+    """Decorator to trace agent execution"""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Show agent started
-            print(f"\n🤖 [{agent_name}] STARTED")
-            print(f"   📥 Input: {kwargs}")
-
+            print(f"\n[{agent_name}] STARTED - Input: {kwargs}")
             start_time = time.time()
 
-            # Execute the agent
             try:
                 result = func(*args, **kwargs)
-                elapsed = time.time() - start_time
 
-                # Print trajectory in thinking → action → results format
                 if isinstance(result, dspy.Prediction):
                     print_react_trajectory(result)
-
-                    # Show final answer
-                    print("\n   ✨ Final Answer:")
-
+                    print("\n   Final Answer:")
                     for key, value in result.items():
                         if key not in ['trajectory', 'reasoning']:
                             print(f"      {key}: {value}")
 
-                print(f"\n   ⏱️  Completed in {elapsed:.2f}s")
-                print(f"✅ [{agent_name}] FINISHED\n")
-
+                print(f"\n[{agent_name}] FINISHED - {time.time() - start_time:.2f}s\n")
                 return result
+
             except Exception as e:
-                elapsed = time.time() - start_time
-                print(f"   ❌ Error: {str(e)}")
-                print(f"   ⏱️  Failed after {elapsed:.2f}s")
-                print(f"❌ [{agent_name}] FAILED\n")
+                print(f"\n[{agent_name}] FAILED - {str(e)} ({time.time() - start_time:.2f}s)\n")
                 raise
         return wrapper
     return decorator
@@ -423,7 +401,7 @@ class MainAgent(dspy.Module):
 
 
 
-dspy.configure(lm=dspy.LM('ollama_chat/qwen3:1.7b', api_base='http://localhost:11434', api_key=''))
+dspy.configure(lm=dspy.LM('ollama_chat/qwen3:4b', api_base='http://localhost:11434', api_key=''))
 
 root_agent = MainAgent()
 if __name__ == "__main__":
