@@ -1,6 +1,6 @@
 # DSPy Toy Example: Multi-Agent ReAct System
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1wZbJbSh-93u5XZvUBO8BOFuuymGz3WyO?usp=sharing)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1CbywSU9zawKyUN5ImxuAp_c-F1szFwSk?usp=sharing)
 
 A demonstration of building intelligent agent systems using [DSPy](https://github.com/stanfordnlp/dspy) with the ReAct pattern.
 
